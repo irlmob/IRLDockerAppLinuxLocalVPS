@@ -1,0 +1,70 @@
+
+
+
+## 
+e = wg0.environment
+
+all: env
+
+env:
+	@echo ""
+	@if [ -f "$e" ]; then echo "⛔️ \e[31mERROR!!! Environement file: $e exist!. Delete it before runnign this command" && ls -la $e && echo "\e[39m"  && exit 1; fi
+	@echo ""
+	@echo "####"	> $e
+	@echo "### Wireguard server/gateway ip over VPN"	>> $e
+	@echo "### Usually same as wg0 [Interface] but will end with 1"	>> $e
+	@echo "###"	>> $e
+	@echo ""	>> $e
+	@echo "WG_ROUTER_IP=<Wiregard gateway IP>"	>> $e
+	@echo ""	>> $e
+	@echo "####"	>> $e
+	@echo "### Local Network - Machine details"	>> $e
+	@echo "####"	>> $e
+	@echo ""	>> $e
+	@echo "LOCAL_IPADRESS=<Static IP on your network>"	>> $e
+	@echo "LOCAL_MAC_ADRESS=40:6c:8f:20:10:<An HEX Number btw 00-ff>"	>> $e
+	@echo "LOCAL_HOSTNAME=<The hostname on your local network>"	>> $e
+	@echo "LOCAL_SUBNET=<The local subnet, usualy the gateway IP, ending by 0>/24"	>> $e
+	@echo "LOCAL_GATEWAY=<IP of your gateway>"	>> $e
+	@echo ""	>> $e
+	@echo "####"	>> $e
+	@echo "### Exposed Distant port on the Network machine"	>> $e
+	@echo "###"	>> $e
+	@echo "### Array of port number"	>> $e
+	@echo "### Ex. 22 80 443 10000"	>> $e
+	@echo "### They will be accessibe on the local machine"	>> $e
+	@echo "### On your network define in LOCAL_IPADRESS / LOCAL_HOSTNAME"	>> $e
+	@echo "### WARNING: Make sure you respect the Spaces"	>> $e
+	@echo "###"	>> $e
+	@echo ""	>> $e
+	@echo "# SSH port (this can be change), please as many port as you need, just one space between each"	>> $e
+	@echo "DISTANT_OPEN_PORTS=22 "	>> $e
+	@echo ""	>> $e
+	@echo "####"	>> $e
+	@echo "### Exposed local IPs / PORT on the distant machine."	>> $e
+	@echo "### Will be accessible to the distant machine"	>> $e
+	@echo "### on the wireguard [Interface]  Address"	>> $e
+	@echo "###"	>> $e
+	@echo "### Array of Strings separated with : "	>> $e
+	@echo "### <exposed on wg0 network>,<local ip>,<local port>"	>> $e
+	@echo "### Ex. ( 80:192.168.178.27:80 443:192.168.178.27:443 )"	>> $e
+	@echo "### WARNING: Make sure you respect the Spaces"	>> $e
+	@echo "###"	>> $e
+	@echo "### Then on the distant machine, you will connect this way:"	>> $e
+	@echo "### wg0 [Interface]Address PORT .."	>> $e
+	@echo "### Ex. (if your wg0 address is 192.168.92.10/24)"	>> $e
+	@echo "###     # wget 192.168.92.10:80 "	>> $e
+	@echo "###     would connect to your local network 192.168.178.27:80 "	>> $e
+	@echo "###"	>> $e
+	@echo ""	>> $e
+	@echo "LOCAL_NETWORK_REDIRECTS=( )"	>> $e
+	@echo ""	>> $e
+	@echo "✅ Created $e. "
+	@ls -la $e
+	@echo "\e[32m Edit the file and fill the details"
+	@echo "\e[39m"
+	@echo "### For details about your network, run:"
+	@echo "\e[32m  ip route | grep default\e[39m"
+	@echo "### For the IP assign in the Wiregard network, run:"
+	@echo "\e[32m  cat $w | grep Address"
+	@echo "\e[39m"

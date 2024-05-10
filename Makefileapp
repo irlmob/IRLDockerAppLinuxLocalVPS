@@ -1,0 +1,75 @@
+include wg0.environment
+export $(shell sed 's/=.*//' wg0.environment)
+export COMPOSE_PROJECT_NAME=$(shell cat .servicename)
+
+## Compose version
+m = x86_64
+s = Linux
+v = 1.28.6
+
+all: build down up
+
+up: network
+	@echo ""
+	@./bin/docker-compose --env-file ./wg0.environment up -d
+	@echo ""
+	@echo "🖥  Bonjour Services for \e[93m${LOCAL_HOSTNAME}\e[39m - See: avahi/services to add/remove services - No restart required"
+	@echo ""
+	@echo "      ---------------------------------------------------------------"
+	@cat avahi/services/* | sed 's/^/      /'
+	@echo ""
+	@echo "      ---------------------------------------------------------------"
+	@echo ""
+	@echo "🖥  Your Machine \e[93m${LOCAL_HOSTNAME}.local\e[39m(${LOCAL_IPADRESS}) is \e[32mup\e[39m and running" 
+	@echo "    on your local network ${LOCAL_SUBNET} !!! 🚀"
+	@echo ""
+	@echo "      ---------------------------------------------------------------"
+	@echo "      MAC ADDRESS:   \e[100m${LOCAL_MAC_ADRESS}\e[49m"
+	@echo "      HOSTNAME:      \e[93m${LOCAL_HOSTNAME}\e[39m"
+	@echo "      IP:            \e[92m${LOCAL_IPADRESS}\e[39m"
+	@echo "      OPEN PORTS:    \e[92m${DISTANT_OPEN_PORTS}\e[39m"
+	@echo "      JUMP TRAFFIC:  \e[92m${LOCAL_NETWORK_REDIRECTS}\e[39m"
+	@echo "      ---------------------------------------------------------------"
+	@echo ""
+	@echo "    To proxy all your traffic through the distant network, use those HTTP / Socks 5 proxy"
+	@echo "      HTTP Proxy:    \e[96m${LOCAL_HOSTNAME}.local:3128 \e[39mor\e[96m ${LOCAL_IPADRESS}:3128\e[39m"
+	@echo "      Socks5 Proxy:  \e[96m${LOCAL_HOSTNAME}.local:1080 \e[39mor\e[96m ${LOCAL_IPADRESS}:1080\e[39m"
+	@echo ""
+	@echo "    \e[93m⚠️ Warning:\e[39m"
+	@echo "      - This new machine is \e[93mONLY accessibe on your local network\e[39m: \e[92m${LOCAL_IPADRESS}\e[39m & \e[93m${LOCAL_HOSTNAME}.local\e[39m"
+	@echo "      - If you also need an access from the local machine hosting the docker container, you may want to consider connecting "
+	@echo "        directly with wiregard from this host machine and assigning a different IP on the wireguard subnet."
+	@echo ""
+
+down:
+	@echo ""
+	@./bin/docker-compose down
+	@rm -rf ./coredns
+	@echo ""
+	@echo " 🖥  Your Machine \e[93m${LOCAL_HOSTNAME}\e[39m is \e[31mdown" 
+	@echo "\e[39m"
+
+network:
+	@echo ""
+	@docker network create -d macvlan \
+	--subnet=${LOCAL_SUBNET} --gateway=${LOCAL_GATEWAY} \
+	-o parent=eth0 pub_net || true
+	@echo ""
+
+.PHONY: log
+log: SHELL:=/bin/bash
+log:
+	@set -o pipefail
+	@./bin/docker-compose logs -f -t || true
+	@set +o pipefail
+
+.PHONY: top
+top: SHELL:=/bin/bash
+top:
+	@./bin/docker-compose top
+
+.PHONY: build    
+build:
+	@echo ""
+	@./bin/docker-compose build
+	@echo ""

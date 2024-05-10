@@ -1,0 +1,65 @@
+#! /bin/sh
+# @author: Denis Martin-Bruillot
+
+# Adding or Removing Items to hosts file
+# Use -h flag for help
+export BASEDIR=<BASEDIR>
+cd $BASEDIR
+
+case "$1" in
+  env)
+    make -C ${BASEDIR} -f Makefileenv
+      ;;
+  up)
+    make -C ${BASEDIR} -f Makefileapp up
+      ;;
+  down)
+    make -C ${BASEDIR} -f Makefileapp down
+      ;;
+  log)
+    make -C ${BASEDIR} -f Makefileapp log
+      ;;
+  top)
+    make -C ${BASEDIR} -f Makefileapp top
+      ;;
+  build)
+    make -C ${BASEDIR} -f Makefileapp build
+      ;;
+  restart)
+    make -C ${BASEDIR} -f Makefileapp down up
+      ;;
+  uninstall)
+    make -C ${BASEDIR} -f Makefileapp down
+      echo ""
+      if [ ! -f "$BASEDIR/.servicename" ]; then echo "⛔️ \e[31mERROR!!! No Installation found" && echo "\e[39m"; exit 1; fi
+      export name=$(cat $BASEDIR/.servicename)
+      echo "\e[93m--> Removing Service name\e[39m: ${name}"
+      rm /usr/local/bin/${name}
+      rm "$BASEDIR/.servicename"
+      rm ${BASEDIR}/bin/${name}
+      rm ${BASEDIR}/bin/docker-compose
+      echo ""
+      echo "✅ Done"
+      echo ""
+      ;;
+
+  *)
+      echo ""
+      echo "🚀 \e[32mUsage: \e[39m"
+      echo ""
+      echo "\e[96m${0##*/}\e[39m \e[32m[ env | up | down | log | top | build | restart | unintall ]\e[39m"
+      echo ""
+      echo "  \e[96m${0##*/}\e[39m \e[32menv\e[39m       # Create the required wg0.environment file"
+      echo "  \e[96m${0##*/}\e[39m \e[32mup\e[39m        # Bring the Stack up"
+      echo "  \e[96m${0##*/}\e[39m \e[32mdown\e[39m      # Tear down the Stack"
+      echo "  \e[96m${0##*/}\e[39m \e[32mlog\e[39m       # Stack log with follow. [Ctrl-C] to exit. Will not tear down the Stack"
+      echo "  \e[96m${0##*/}\e[39m \e[32mtop\e[39m       # Display the running processes"
+      echo "  \e[96m${0##*/}\e[39m \e[32mbuild\e[39m     # Build the required Docker"
+      echo "  \e[96m${0##*/}\e[39m \e[32mrestart\e[39m   # Same as runing ${0##*/} down && ${0##*/} up"
+      echo "  \e[96m${0##*/}\e[39m \e[32muninstall\e[39m # Same as runing ${0##*/} down; \e[96mmake uninstall\e[39m. Will require to install the service again with \e[96mmake\e[39m"
+      echo ""
+      exit 1
+      ;;
+esac
+
+exit 0

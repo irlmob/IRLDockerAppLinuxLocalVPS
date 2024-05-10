@@ -1,0 +1,24 @@
+<?xml version="1.0" standalone='no'?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+  <name replace-wildcards="yes">%h</name>
+  <!-- 🧲 Device Info --><service>
+      <type>_device-info._tcp</type>
+      <port>0</port>
+      <txt-record>model=MacPro7,1@ECOLOR=226,226,224</txt-record>
+      <!-- Available models /System/Library/CoreServices/CoreTypes.bundle/Contents/Info.plist -->
+  </service>
+  <!-- 🧲 The Secure Shell (SSH) Protocol --><service>
+    <type>_ssh._tcp</type>
+    <port>22</port>
+  </service>
+  <!-- 🧲 Secure File Transfer Protocol over SSH --><service>
+    <type>_sftp-ssh._tcp</type>
+    <port>22</port>
+  </service>
+  <!-- 🧲 SMB  -->
+  <service>
+    <type>_smb._tcp.</type>
+    <port>445</port>
+  </service>
+</service-group>
