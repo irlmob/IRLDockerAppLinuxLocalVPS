@@ -150,7 +150,7 @@ LOCAL_NETWORK_REDIRECTS=( 80:<Local IP>:80 443:<Local IP>:443 )
 **Example**: 
 
 ```bash
-LOCAL_NETWORK_REDIRECTS=( 80:192.168.178.27:80 443:192.168.178.27:443 )
+LOCAL_NETWORK_REDIRECTS=( 80:192.168.10.27:80 443:192.168.10.27:443 )
 ```
 
 - To make `192.168.178.27:80` accessible via `192.168.92.10:80` on the Wireguard network, therfore from the VPS. 
